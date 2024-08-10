@@ -44,4 +44,4 @@ jobs:
             sudo docker rmi -f $(docker images ${{ secrets.DOCKER_REPOSITORY }}:latest -q)
             sudo docker login ccr.ccs.tencentyun.com --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
             sudo docker pull ${{ secrets.DOCKER_REPOSITORY }}:latest
-            sudo docker run -d -p 80:80 ${{ secrets.DOCKER_REPOSITORY }}:latest
+            sudo docker run -d -p 8000:80 ${{ secrets.DOCKER_REPOSITORY }}:latest
