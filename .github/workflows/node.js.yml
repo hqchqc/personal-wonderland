@@ -1,0 +1,57 @@
+name: BlogVue3 Docker Image CI/CD  # workflow名称，可以随意改
+on:   # workflow的事件钩子，告知程序什么时候出发自动部署
+  push:
+    branches: [ master ]   # 在master分支有push操作的时候自动部署
+jobs:
+  # 第一个工作-build
+  build:  # 打包并上传docker镜像
+    runs-on: ubuntu-latest   # 依赖的环境,注意：actions提供的linux环境只有ubuntu
+    steps:
+      # 使用actions/checkout@v2获取项目中的代码（name是阶段名，可以随便填，每一个name必须对应一个run/uses）
+      - name: Checkout
+        uses: actions/checkout@v2
+      # 下载node版本环境
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+      # 下载项目依赖并打包（如果上传了package-lock.json文件到github仓库，注意依赖包的源地址，我这里本地npm源地址是公司内网，所以lock文件里面有的依赖包地址也是公司内网，这时github执行install就会请求失败）
+      - name: Install and Build
+        run: |
+          npm install
+          npm run build
+      # 创建docker镜像
+      - name: Build Image
+        # ${{ secrets.DOCKER_REPOSITORY }}是读取之前在Secret创建的名为DOCKER_REPOSITORY的值
+        # 从项目根目录的dockerfile文件创建docker镜像
+        run: docker build -t ${{ secrets.DOCKER_REPOSITORY }}:latest ./
+      # 登录刚刚创建的腾讯云docker镜像仓库
+      - name: Login to registry
+        run: docker login ccr.ccs.tencentyun.com --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
+      # 将镜像提交到镜像仓库
+      - name: Push Image
+        run: docker push ${{ secrets.DOCKER_REPOSITORY }}:latest
+  # 第二个工作-pull-docker
+  pull-docker:
+    needs: [build]
+    name: Pull Docker
+    runs-on: ubuntu-latest
+    steps:
+      # 登录腾讯云服务器并将docker镜像仓库的镜像pull下来后启动新容器
+      - name: Deploy
+        # 使用appleboy/ssh-action@master完成ssh登录服务器
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.HOST_USERNAME }}
+          password: ${{ secrets.HOST_PASSWORD }}
+          port: ${{ secrets.HOST_PORT }}
+          # 登录上服务器后执行的代码步骤（停止旧容器->删除旧容器->删除旧镜像->登录镜像仓库->pull新镜像->利用新镜像启动新容器）
+          script: |
+            docker stop $(docker ps --filter ancestor=${{ secrets.DOCKER_REPOSITORY }} -q)
+            docker rm -f $(docker ps -a --filter ancestor=${{ secrets.DOCKER_REPOSITORY }}:latest -q)
+            docker rmi -f $(docker images ${{ secrets.DOCKER_REPOSITORY }}:latest -q)
+            docker login ccr.ccs.tencentyun.com --username=${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
+            docker pull ${{ secrets.DOCKER_REPOSITORY }}:latest
+            docker run -d -p 8000:80 ${{ secrets.DOCKER_REPOSITORY }}:latest
+
