@@ -1,6 +1,4 @@
-<script setup lang="ts">
-// interface Props {}
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="h-full w-full">

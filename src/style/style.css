@@ -9,13 +9,13 @@
   pointer-events: none;
   transition: 0.2s ease-in-out;
   transition-property: background, opacity, transform;
+}
 
-  &.hidden {
-    opacity: 0;
-  }
+#cursor.hidden {
+  opacity: 0;
+}
 
-  &.active {
-    opacity: 0.5;
-    transform: scale(0.5);
-  }
+#cursor.active {
+  opacity: 0.5;
+  transform: scale(0.5);
 }

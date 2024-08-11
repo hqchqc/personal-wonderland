@@ -1,9 +1,6 @@
 <script setup lang="ts">
-interface Props {
-  siteSlogan?: string
-  personSlogan?: string
-}
-const { siteSlogan, personSlogan } = defineProps<Props>()
+const siteSlogan = import.meta.env.VITE_SITE_SLOGAN
+const personSlogan = import.meta.env.VITE_PERSON_SLOGAN
 </script>
 
 <template>
