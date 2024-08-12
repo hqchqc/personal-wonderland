@@ -14,6 +14,7 @@ export default defineConfig({
   theme: {
     colors: {}
   },
+  rules: [],
   presets: [
     presetUno(),
     presetIcons({

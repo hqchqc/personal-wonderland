@@ -18,8 +18,10 @@ const { type } = withDefaults(defineProps<Props>(), {
 
 <template>
   <div
-    class="max-w-115 rounded-md bg-[#00000040] p-5"
-    :class="type === 'desc' ? 'mt-14' : type === 'list' ? 'w-[32%] h-24 mb-5' : ''"
+    class="max-w-115 rounded-md bg-[#00000040] p-5 backdrop-blur-10 transition-transform duration-200 hover:scale-105"
+    :class="
+      type === 'desc' ? 'mt-14' : type === 'list' ? 'w-[32%] h-24 mb-5 hover:backdrop-blur-20' : ''
+    "
   >
     <div class="h-full flex justify-between">
       <GlassCardDescItem v-if="type === 'desc'" />

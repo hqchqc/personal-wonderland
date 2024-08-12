@@ -5,10 +5,9 @@
   background: #fff;
   border-radius: 25px;
   opacity: 0.25;
-  z-index: 10086;
   pointer-events: none;
-  transition: 0.2s ease-in-out;
-  transition-property: background, opacity, transform;
+  transition: 0.8s ease-in-out;
+  transition-property: background;
 }
 
 #cursor.hidden {
