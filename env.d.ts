@@ -3,6 +3,9 @@
 interface ImportMetaEnv {
   readonly VITE_SITE_NAME: string
   readonly VITE_SITE_SLOGAN: string
+  readonly VITE_SITE_ICP: string
+  readonly VITE_SITE_POWER: string
+  readonly VITE_SITE_TIME: string
   readonly VITE_PERSON_SLOGAN: string
   readonly VITE_SOCIAL_LINKS: string
 }
